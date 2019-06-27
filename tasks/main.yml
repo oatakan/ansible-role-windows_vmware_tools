@@ -1,0 +1,54 @@
+---
+
+- block:
+
+    - name: install vmware tools
+      win_package:
+        path: '{{ vmware_tools_download_url }}'
+        product_id: '{748D3A12-9B82-4B08-A0FF-CFDE83612E87}'
+        arguments: '/s /v "/qn reboot=r"'
+        state: present
+
+  rescue:
+
+    - name: copy vmware tools to temp directory
+      win_get_url:
+        url: '{{ vmware_tools_download_url }}'
+        dest: '{{ ansible_env.TEMP }}\{{ vmware_tools_download_url | urlsplit("path") | basename }}'
+      register: download_vmware_tools
+      until: download_vmware_tools is success
+      delay: 3
+      retries: 5
+
+    - name: install vmware tools using win_shell module
+      win_shell: '{{ download_vmware_tools.dest }} /s /v "/qn reboot=r"'
+      when: download_vmware_tools is success
+
+    - name: remove temporary file
+      win_file:
+        path: '{{ ansible_env.TEMP }}\{{ vmware_tools_download_url | urlsplit("path") | basename }}'
+        state: absent
+
+- name: check to see vmware tools is installed
+  win_stat:
+    path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
+  register: vmware_tools_install
+
+- block:
+
+    - name: install with chocolatey
+      win_chocolatey:
+        name: vmware-tools
+        state: present
+
+  when: vmware_tools_install.stat.exists == False
+
+- name: check to see vmware tools is installed (2nd time)
+  win_stat:
+    path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
+  register: vmware_tools_install_2
+
+- name: fail if not installed
+  fail:
+    msg: "vmware tools is not installed.. well we tried..."
+  when: vmware_tools_install_2.stat.exists == False
