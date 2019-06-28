@@ -41,7 +41,7 @@
         name: vmware-tools
         state: present
 
-  when: vmware_tools_install.stat.exists
+  when: not vmware_tools_install.stat.exists
 
 - name: check to see vmware tools is installed (2nd time)
   win_stat:
@@ -51,4 +51,4 @@
 - name: fail if not installed
   fail:
     msg: "vmware tools is not installed.. well we tried..."
-  when: vmware_tools_install_2.stat.exists
+  when: not vmware_tools_install_2.stat.exists
