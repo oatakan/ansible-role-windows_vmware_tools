@@ -1,4 +1,4 @@
-# ansible-role-vmware-tools
+# windows_vmware_tools
 This repo contains an Ansible role that installs VMware tools on Windows images.
 Role Name
 
@@ -24,7 +24,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - oatakan.windows-vmware-tools
+         - oatakan.windows_vmware_tools
 
 License
 -------
