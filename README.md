@@ -1,6 +1,5 @@
 # windows_vmware_tools
 This repo contains an Ansible role that installs VMware tools on Windows images.
-Role Name
 
 Requirements
 ------------

@@ -34,13 +34,10 @@
     path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
   register: vmware_tools_install
 
-- block:
-
-    - name: install with chocolatey
-      win_chocolatey:
-        name: vmware-tools
-        state: present
-
+- name: install with chocolatey
+  win_chocolatey:
+    name: vmware-tools
+    state: present
   when: not vmware_tools_install.stat.exists
 
 - name: check to see vmware tools is installed (2nd time)
@@ -52,3 +49,6 @@
   fail:
     msg: "vmware tools is not installed.. well we tried..."
   when: not vmware_tools_install_2.stat.exists
+
+- name: reboot after installation
+  win_reboot:
