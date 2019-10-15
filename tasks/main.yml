@@ -61,3 +61,4 @@
 
 - name: reboot after installation
   win_reboot:
+  when: not vmware_tools_install.stat.exists
