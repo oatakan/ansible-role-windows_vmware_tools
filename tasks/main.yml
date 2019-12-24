@@ -10,6 +10,8 @@
         state: present
 
   rescue:
+    - pause:
+        seconds: 720
 
     - name: copy vmware tools to temp directory
       win_get_url:
