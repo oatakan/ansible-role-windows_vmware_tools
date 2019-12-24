@@ -14,7 +14,7 @@
       win_package:
         path: https://aka.ms/vs/16/release/vc_redist.x64.exe
         product_id: '{7DC387B8-E6A2-480C-8EF9-A6E51AE81C19}'
-        arguments: '/qb!'
+        arguments: /install /passive /norestart
 
     - name: copy vmware tools to temp directory
       win_get_url:
