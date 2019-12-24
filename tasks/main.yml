@@ -39,6 +39,10 @@
     path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
   register: vmware_tools_install
 
+- pause:
+    seconds: 1440
+  when: not vmware_tools_install.stat.exists
+
 - name: install with chocolatey
   win_chocolatey:
     name: vmware-tools
