@@ -16,6 +16,9 @@
         product_id: '{7DC387B8-E6A2-480C-8EF9-A6E51AE81C19}'
         arguments: /install /passive /norestart
 
+    - name: reboot system
+      win_reboot:
+
     - name: copy vmware tools to temp directory
       win_get_url:
         url: '{{ vmware_tools_download_url }}'
