@@ -11,7 +11,7 @@
 
   rescue:
     - pause:
-        seconds: 720
+        seconds: 1440
 
     - name: copy vmware tools to temp directory
       win_get_url:
