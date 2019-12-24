@@ -5,13 +5,16 @@
     - name: install vmware tools
       win_package:
         path: '{{ vmware_tools_download_url }}'
-        product_id: '{748D3A12-9B82-4B08-A0FF-CFDE83612E87}'
+        product_id: '{742FCBAF-EE5D-48B2-9E95-DA0513B79570}'
         arguments: '/s /v "/qn reboot=r"'
         state: present
 
   rescue:
-    - pause:
-        seconds: 1440
+    - name: install the visual C++ libraries
+      win_package:
+        path: https://aka.ms/vs/16/release/vc_redist.x64.exe
+        product_id: '{7DC387B8-E6A2-480C-8EF9-A6E51AE81C19}'
+        arguments: '/qb!'
 
     - name: copy vmware tools to temp directory
       win_get_url:
