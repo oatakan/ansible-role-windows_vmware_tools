@@ -1,5 +1,14 @@
 ---
 
+- debug:
+    msg: "{{ ansible_user | default('no user found') }}"
+
+- debug:
+    msg: "{{ remote_user | default('no user found') }}"
+
+- debug:
+    msg: "{{ hostvars[inventory_hostname] }}"
+
 - block:
 
     - name: install vmware tools
