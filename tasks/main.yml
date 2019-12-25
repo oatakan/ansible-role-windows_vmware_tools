@@ -40,7 +40,7 @@
     ansible_become: yes
     ansible_become_method: runas
     ansible_become_user: '{{ ansible_user_id }}'
-    ansible_become_pass: '{{ ansible_password }}'
+    ansible_become_pass: '{{ target_password }}'
 
 - name: check to see vmware tools is installed
   win_stat:
