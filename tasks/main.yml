@@ -1,8 +1,5 @@
 ---
 
-- pause:
-    seconds: 1440
-
 - block:
 
     - name: install vmware tools
@@ -13,15 +10,6 @@
         state: present
 
   rescue:
-    - name: install the visual C++ libraries
-      win_package:
-        path: https://aka.ms/vs/16/release/vc_redist.x64.exe
-        product_id: '{7DC387B8-E6A2-480C-8EF9-A6E51AE81C19}'
-        arguments: /install /passive /norestart
-
-    - name: reboot system
-      win_reboot:
-
     - name: copy vmware tools to temp directory
       win_get_url:
         url: '{{ vmware_tools_download_url }}'
@@ -39,6 +27,11 @@
       win_file:
         path: '{{ ansible_env.TEMP }}\{{ vmware_tools_download_url | urlsplit("path") | basename }}'
         state: absent
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: '{{ ansible_user }}'
+    ansible_become_pass: '{{ ansible_password }}'
 
 - name: check to see vmware tools is installed
   win_stat:
