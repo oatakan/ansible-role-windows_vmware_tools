@@ -1,5 +1,10 @@
 ---
 
+- name: set become variables
+  set_fact:
+    ansible_become_user: '{{ ansible_user }}'
+    ansible_become_pass: '{{ ansible_password }}'
+
 - block:
 
     - name: install vmware tools
