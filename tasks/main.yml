@@ -1,14 +1,5 @@
 ---
 
-- debug:
-    msg: "{{ ansible_user | default('no user found') }}"
-
-- debug:
-    msg: "{{ remote_user | default('no user found') }}"
-
-- debug:
-    msg: "{{ hostvars[inventory_hostname] }}"
-
 - block:
 
     - name: install vmware tools
@@ -39,8 +30,8 @@
   vars:
     ansible_become: yes
     ansible_become_method: runas
-    ansible_become_user: '{{ ansible_user_id }}'
-    ansible_become_pass: '{{ target_password }}'
+#    ansible_become_user: '{{ ansible_user_id }}'
+#    ansible_become_pass: '{{ target_password }}'
 
 - name: check to see vmware tools is installed
   win_stat:
