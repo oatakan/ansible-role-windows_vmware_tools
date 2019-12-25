@@ -4,6 +4,7 @@
   set_fact:
     become_user: '{{ ansible_user }}'
     become_pass: '{{ ansible_password }}'
+  no_log: True
 
 - block:
 
