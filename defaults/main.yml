@@ -1,3 +1,6 @@
 ---
 
-vmware_tools_download_url: https://packages.vmware.com/tools/releases/11.0.1/windows/x64/VMware-tools-11.0.1-14773994-x86_64.exe
+#vmware_tools_download_url: https://packages.vmware.com/tools/releases/11.0.1/windows/x64/VMware-tools-11.0.1-14773994-x86_64.exe
+#vmware_tools_product_id: '{742FCBAF-EE5D-48B2-9E95-DA0513B79570}'
+vmware_tools_download_url: https://packages.vmware.com/tools/releases/11.0.6/windows/x64/VMware-tools-11.0.6-15940789-x86_64.exe
+vmware_tools_product_id: '{25932044-BBC8-444F-ACF4-7E508054FA12}'

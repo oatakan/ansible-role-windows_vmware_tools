@@ -11,7 +11,7 @@
     - name: install vmware tools
       win_package:
         path: '{{ vmware_tools_download_url }}'
-        product_id: '{742FCBAF-EE5D-48B2-9E95-DA0513B79570}'
+        product_id: '{{ vmware_tools_product_id }}'
         arguments: '/s /v "/qn reboot=r"'
         state: present
 
