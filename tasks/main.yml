@@ -36,8 +36,8 @@
   vars:
     ansible_become: yes
     ansible_become_method: runas
-    ansible_become_user: '{{ become_user }}'
-    ansible_become_pass: '{{ become_pass }}'
+    ansible_become_user: '{{ become_user | default(ansible_user) }}'
+    ansible_become_pass: '{{ become_pass | default(ansible_password) }}'
 
 - name: check to see vmware tools is installed
   win_stat:
