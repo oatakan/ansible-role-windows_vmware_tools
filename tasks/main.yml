@@ -7,6 +7,9 @@
   no_log: True
 
 - block:
+    - include_tasks: find_latest.yml
+      when: vmware_tools_find_latest
+
     - name: install vmware tools
       win_package:
         path: '{{ vmware_tools_download_url }}'

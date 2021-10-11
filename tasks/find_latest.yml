@@ -1,0 +1,18 @@
+---
+
+- name: get vmware tools latest download page
+  win_uri:
+    url: "{{ vmware_tools_download_base_url }}"
+    return_content: yes
+    validate_certs: no
+  register: vmware_tools_latest_page
+
+- name: set vmware_tools_latest_install_file
+  set_fact:
+    vmware_tools_latest_install_file: "{{ vmware_tools_latest_page.content | regex_findall('A HREF=\"(.*)\">VMware-tools.*') }}"
+
+- name: set vmware_tools_download_url
+  set_fact:
+    vmware_tools_download_url: "{{ vmware_tools_download_base_url }}{{ vmware_tools_latest_install_file[0] }}"
+    vmware_tools_product_id: ''
+  when: vmware_tools_latest_install_file|length
