@@ -14,7 +14,7 @@
       win_package:
         path: '{{ vmware_tools_download_url }}'
         product_id: '{{ vmware_tools_product_id }}'
-        arguments: '/s /v "/qn reboot=r"'
+        arguments: /S /v /qn REBOOT=R ADDLOCAL=ALL
         state: present
       register: vmware_tools_install
   rescue:
@@ -55,7 +55,7 @@
       win_package:
         path: '{{ vmware_tools_download_url }}'
         product_id: '{{ vmware_tools_product_id }}'
-        arguments: '/s /v "/qn reboot=r"'
+        arguments: /S /v /qn REBOOT=R ADDLOCAL=ALL
         state: present
 
     - name: check to see vmware tools is installed (2/3)
