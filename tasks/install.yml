@@ -1,0 +1,73 @@
+---
+
+- name: set become variables
+  set_fact:
+    become_user: '{{ ansible_user }}'
+    become_pass: '{{ ansible_password }}'
+  no_log: True
+
+- block:
+    - name: copy vmware tools to temp directory
+      win_get_url:
+        url: '{{ vmware_tools_download_url }}'
+        dest: '{{ temp_directory }}\{{ vmware_tools_download_url | urlsplit("path") | basename }}'
+      register: download_vmware_tools
+      until: download_vmware_tools is success
+      delay: 3
+      retries: 5
+
+    - name: install vmware tools
+      win_package:
+        path: '{{ download_vmware_tools.dest }}'
+        arguments: /s /v "/qn reboot=r"
+        state: present
+      register: vmware_tools_install
+
+  rescue:
+    - block:
+        - name: fail if vmware tools is not downloaded
+          fail:
+            msg: "no local copy of vmware tools"
+          when: download_vmware_tools is not success
+
+        - name: install vmware tools using win_shell module
+          win_shell: '{{ download_vmware_tools.dest }} /s /v "/qn reboot=r"'
+          when: download_vmware_tools is success
+
+        - name: check to see vmware tools is installed
+          win_stat:
+            path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
+          register: check_vmware_tools_installation
+
+        - name: fail if not installed
+          fail:
+            msg: "vmware tools is not installed.."
+          when: not (check_vmware_tools_installation.stat.exists | default(true))
+
+      rescue:
+        - name: install with chocolatey
+          win_chocolatey:
+            name: vmware-tools
+            state: present
+          register: vmware_tools_install
+
+  always:
+    - name: remove downloaded file
+      win_file:
+        path: '{{ temp_directory }}\{{ vmware_tools_download_url | urlsplit("path") | basename }}'
+        state: absent
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: '{{ become_user | default(ansible_user) }}'
+    ansible_become_pass: '{{ become_pass | default(ansible_password) }}'
+
+- name: check to see vmware tools is installed
+  win_stat:
+    path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
+  register: check_vmware_tools_installation
+
+- name: fail if not installed
+  fail:
+    msg: "vmware tools is not installed.. well we tried..."
+  when: not (check_vmware_tools_installation.stat.exists | default(true))
