@@ -7,3 +7,9 @@ vmware_tools_download_url: https://packages.vmware.com/tools/releases/11.0.6/win
 vmware_tools_product_id: '{25932044-BBC8-444F-ACF4-7E508054FA12}'
 
 vmware_tools_find_latest: true
+
+temp_directory: "{{ ansible_env.TEMP }}"
+win_61_security_hot_fix:
+  kb: kb4474419
+  file: windows6.1-kb4474419-v3-x64_b5614c6cea5cb4e198717789633dca16308ef79c.msu
+  url: http://download.windowsupdate.com/c/msdownload/update/software/secu/2019/09/windows6.1-kb4474419-v3-x64_b5614c6cea5cb4e198717789633dca16308ef79c.msu

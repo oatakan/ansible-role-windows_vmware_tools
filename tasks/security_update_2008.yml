@@ -1,0 +1,34 @@
+---
+
+- block:
+    - name: download hotfix
+      win_get_url:
+        url: '{{ win_61_security_hot_fix.url }}'
+        dest: '{{ temp_directory }}\{{ win_61_security_hot_fix.file }}'
+      register: download_hotfix
+      until: download_hotfix is success
+      delay: 3
+      retries: 5
+
+    - include_tasks: hotfix_ps3.yml
+      when: ansible_powershell_version is version('3', '==')
+      vars:
+        hotfix_download: "{{ win_61_security_hot_fix }}"
+        hotfix_temp_directory: "{{ temp_directory }}"
+
+    - include_tasks: hotfix_ps4.yml
+      when: ansible_powershell_version is version('4', '>=')
+      vars:
+        hotfix_download: "{{ win_61_security_hot_fix }}"
+        hotfix_temp_directory: "{{ temp_directory }}"
+
+    - name: reboot
+      win_reboot:
+      when:
+        - hotfix_install is defined
+        - hotfix_install is changed
+  always:
+    - name: ensure hotfix is removed
+      win_file:
+        path: '{{ temp_directory }}\{{ win_61_security_hot_fix.file }}'
+        state: absent
