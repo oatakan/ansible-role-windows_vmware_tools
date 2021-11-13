@@ -28,7 +28,7 @@
         - hotfix_install is defined
         - hotfix_install is changed
   always:
-    - name: ensure hotfix is removed
+    - name: ensure hotfix file is removed
       win_file:
         path: '{{ temp_directory }}\{{ win_61_security_hot_fix.file }}'
         state: absent
