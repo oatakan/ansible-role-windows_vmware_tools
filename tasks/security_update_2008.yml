@@ -37,7 +37,10 @@
         hotfix_download: "{{ win_61_security_hot_fix }}"
         hotfix_temp_directory: "{{ temp_directory }}"
 
-    - include_tasks: hotfix_ps4.yml
+    - block:
+        - include_tasks: hotfix_ps4.yml
+      rescue:
+        - include_tasks: hotfix_ps3.yml
       when: ansible_powershell_version is version('4', '>=')
       vars:
         hotfix_download: "{{ win_61_security_hot_fix }}"
