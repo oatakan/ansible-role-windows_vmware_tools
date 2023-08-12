@@ -1,0 +1,5 @@
+---
+
+- name: not supported yet
+  ansible.builtin.debug:
+    msg: "arm support is not implemented yet"

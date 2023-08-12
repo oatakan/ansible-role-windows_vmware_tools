@@ -1,24 +1,9 @@
 ---
 
-# This is needed on 2008
-# See: https://kb.vmware.com/s/article/78708
-- include_tasks: security_update_2008.yml
-  when: "'Windows Server 2008' in ansible_distribution or 'Windows 7' in ansible_distribution"
+- name: include architecture
+  ansible.builtin.include_tasks: x86.yml
+  when: (ansible_architecture2 | default('x86_64')) == 'x86_64'
 
-- include_tasks: find_latest.yml
-  when: vmware_tools_find_latest
-
-- include_tasks: install.yml
-
-# This is needed on 2008 for vmware customization to be successful
-# See: https://kb.vmware.com/s/article/66765
-- name: install the visual C libraries
-  win_package:
-    path: https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe
-    product_id: '{9BE518E6-ECC6-35A9-88E4-87755C07200F}'
-    arguments: '/qb!'
-  when: "'Windows Server 2008' in ansible_distribution or 'Windows 7' in ansible_distribution"
-
-- name: reboot after installation
-  win_reboot:
-  when: vmware_tools_install.reboot_required | default(true)
+- name: include architecture
+  ansible.builtin.include_tasks: arm.yml
+  when: (ansible_architecture2 | default('x86_64')) == 'arm64'

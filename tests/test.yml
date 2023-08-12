@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- name: install vmware tools
+  hosts: localhost
   remote_user: Administrator
   vars:
     ansible_port: 5986
@@ -7,4 +8,4 @@
     ansible_winrm_transport: credssp
     ansible_winrm_server_cert_validation: ignore
   roles:
-    - oatakan.windows_vmware_tools
+    - ./
