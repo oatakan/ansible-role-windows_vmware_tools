@@ -3,19 +3,17 @@ galaxy_info:
   author: Orcun Atakan
   description: Ansible galaxy role for installing VMware tools on Windows images.
   role_name: windows_vmware_tools
+  namespace: oatakan
   company: Red Hat
 
   license: MIT
 
-  min_ansible_version: 2.5
+  min_ansible_version: 2.9
 
   platforms:
     - name: Windows
       versions:
         - all
-
-  cloud_platforms:
-    - vmware
 
   galaxy_tags:
     - windows
@@ -23,5 +21,3 @@ galaxy_info:
     - tools
     - cloud
     - multicloud
-
-dependencies: []

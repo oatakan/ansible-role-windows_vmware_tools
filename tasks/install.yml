@@ -36,7 +36,7 @@
 
         - name: check to see vmware tools is installed
           ansible.windows.win_stat:
-            path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
+            path: '{{ vmware_tools_install_location }}'
           register: check_vmware_tools_installation
 
         - name: fail if not installed
@@ -64,7 +64,7 @@
 
 - name: check to see vmware tools is installed
   ansible.windows.win_stat:
-    path: 'C:\Program Files\VMware\VMware Tools\vmtoolsd.exe'
+    path: '{{ vmware_tools_install_location }}'
   register: check_vmware_tools_installation
 
 - name: fail if not installed
