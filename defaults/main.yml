@@ -3,6 +3,7 @@
 # vmware_tools_download_url: https://packages.vmware.com/tools/releases/11.0.1/windows/x64/VMware-tools-11.0.1-14773994-x86_64.exe
 # vmware_tools_product_id: '{742FCBAF-EE5D-48B2-9E95-DA0513B79570}'
 vmware_tools_download_base_url: https://packages.vmware.com/tools/releases/latest/windows/{{ vmware_tools_arch_mapped | default('x64') }}/
+vmware_tools_validate_certs: true
 vmware_tools_download_urls:
   amd64: https://packages.vmware.com/tools/releases/12.3.5/windows/x64/VMware-tools-12.3.5-22544099-x86_64.exe
   arm64: https://packages.vmware.com/tools/releases/12.3.5/windows/arm/VMware-tools-12.3.5-22544099-arm.exe
@@ -19,6 +20,14 @@ vmware_tools_install_location: "{{ vmware_tools_install_locations[win_architectu
 vmware_tools_find_latest: true
 
 temp_directory: "{{ ansible_env.TEMP }}"
+
+# Windows Server 2008 R2 / Windows 7 prerequisites
+# By default we do NOT attempt to install Windows ADK (often incompatible on 2008 R2 and may fail to download).
+# If you truly need ADK-provided DISM, set `windows_vmware_tools_install_adk: true` and override the URL/version.
+windows_vmware_tools_install_adk: false
+windows_adk_download_url: https://go.microsoft.com/fwlink/?linkid=873065 # ADK 10.0.17134.0 installer stub
+windows_adk_choco_version: 10.0.17134.0
+
 win_61_security_hot_fix:
   kb: kb4474419
   file: windows6.1-kb4474419-v3-x64_b5614c6cea5cb4e198717789633dca16308ef79c.msu

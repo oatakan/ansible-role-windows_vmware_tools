@@ -1,9 +1,19 @@
 ---
 
+- name: ensure temp directory exists
+  ansible.windows.win_file:
+    path: '{{ temp_directory }}'
+    state: directory
+
+- name: check for built-in DISM
+  ansible.windows.win_stat:
+    path: C:\Windows\System32\dism.exe
+  register: win_dism
+
 - block:
     - name: ensure Windows ADK with DISM is installed
       ansible.windows.win_package:
-        path: https://go.microsoft.com/fwlink/?linkid=873065 # version 10.0.17134.0
+        path: '{{ windows_adk_download_url }}'
         product_id: '{{ _product_id }}'
         expected_return_code:
           - 0
@@ -15,10 +25,11 @@
 
   rescue:
     - block:
-        - name: download DISM
-          win_get_url:
-            url: https://go.microsoft.com/fwlink/?linkid=873065
-            dest: '{{ temp_directory }}\adksetup.exe'
+        - name: download ADK installer
+          ansible.windows.win_get_url:
+            url: '{{ windows_adk_download_url }}'
+            dest: '{{ temp_directory }}\\adksetup.exe'
+            validate_certs: false
           register: download_dism
           retries: 5
           delay: 5
@@ -26,7 +37,7 @@
 
         - name: ensure Windows ADK with DISM is installed
           ansible.windows.win_package:
-            path: '{{ temp_directory }}\adksetup.exe' # version 10.0.17134.0
+            path: '{{ temp_directory }}\\adksetup.exe'
             product_id: '{{ _product_id }}'
             expected_return_code:
               - 0
@@ -41,9 +52,13 @@
           chocolatey.chocolatey.win_chocolatey:
             name: windows-adk-deploy
             state: present
-            version: 10.0.17134.0
+            version: '{{ windows_adk_choco_version }}'
           register: install_windows_adk_deploy
           notify: ensure Windows ADK with DISM is removed
+
+  when:
+    - windows_vmware_tools_install_adk | default(false)
+    - not (win_dism.stat.exists | default(false))
 
   vars:
     _product_id: '{d794748d-72e9-45d7-9ab7-83d6c4c80f7f}'
@@ -67,27 +82,70 @@
       delay: 3
       retries: 5
 
+    - name: check whether DISM PowerShell module is available
+      ansible.windows.win_shell: |
+        if (Get-Module -ListAvailable -Name Dism -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }
+      register: dism_ps_module_check
+      changed_when: false
+      failed_when: false
+      when: ansible_powershell_version is version('4', '>=')
+
     - name: apply hotfix (ps3)
       ansible.builtin.include_tasks: hotfix_ps3.yml
-      when: ansible_powershell_version is version('3', '==')
+      when:
+        - ansible_powershell_version is version('3', '==')
+          or (ansible_powershell_version is version('4', '>=') and (dism_ps_module_check.rc | default(1)) != 0)
       vars:
         hotfix_download: "{{ win_61_security_hot_fix }}"
         hotfix_temp_directory: "{{ temp_directory }}"
 
-    - block:
+    - name: apply hotfix (ps4)
+      block:
         - name: apply hotfix (ps4)
           ansible.builtin.include_tasks: hotfix_ps4.yml
+          vars:
+            hotfix_download: "{{ win_61_security_hot_fix }}"
+            hotfix_temp_directory: "{{ temp_directory }}"
       rescue:
         - name: apply hotfix (ps3)
           ansible.builtin.include_tasks: hotfix_ps3.yml
-      when: ansible_powershell_version is version('4', '>=')
-      vars:
-        hotfix_download: "{{ win_61_security_hot_fix }}"
-        hotfix_temp_directory: "{{ temp_directory }}"
+          vars:
+            hotfix_download: "{{ win_61_security_hot_fix }}"
+            hotfix_temp_directory: "{{ temp_directory }}"
+      when:
+        - ansible_powershell_version is version('4', '>=')
+        - (dism_ps_module_check.rc | default(1)) == 0
 
     - name: reboot
-      ansible.windows.win_reboot:
+      block:
+        - name: reboot (shutdown fallback)
+          ansible.windows.win_shell: shutdown.exe /r /t 5 /c "Reboot required by KB install" /f
+          changed_when: true
+
+        - name: wait for host to come back
+          ansible.builtin.wait_for_connection:
+            delay: 10
+            timeout: 900
       when:
+        - (ansible_distribution_version | default('')) is search('^6\\.1')
+        - hotfix_install is defined
+        - hotfix_install is changed
+
+    - name: reboot
+      block:
+        - name: reboot (win_reboot)
+          ansible.windows.win_reboot:
+      rescue:
+        - name: reboot (shutdown fallback)
+          ansible.windows.win_shell: shutdown.exe /r /t 5 /c "Reboot required by KB install" /f
+          changed_when: true
+
+        - name: wait for host to come back
+          ansible.builtin.wait_for_connection:
+            delay: 10
+            timeout: 900
+      when:
+        - not ((ansible_distribution_version | default('')) is search('^6\\.1'))
         - hotfix_install is defined
         - hotfix_install is changed
   always:

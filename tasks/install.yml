@@ -2,8 +2,8 @@
 
 - name: set become variables
   ansible.builtin.set_fact:
-    become_user: '{{ ansible_user }}'
-    become_pass: '{{ ansible_password }}'
+    vmware_tools_become_user: '{{ ansible_user }}'
+    vmware_tools_become_pass: '{{ ansible_password }}'
   no_log: true
 
 - block:
@@ -59,8 +59,12 @@
   vars:
     ansible_become: true
     ansible_become_method: runas
-    ansible_become_user: '{{ become_user | default(ansible_user) }}'
-    ansible_become_pass: '{{ become_pass | default(ansible_password) }}'
+    ansible_become_user: '{{ vmware_tools_become_user | default(ansible_user) }}'
+    ansible_become_pass: '{{ vmware_tools_become_pass | default(ansible_password) }}'
+
+- name: set vmware tools reboot requirement fact
+  ansible.builtin.set_fact:
+    vmware_tools_reboot_required: "{{ (vmware_tools_install.reboot_required | default(true)) if (vmware_tools_install is defined) else true }}"
 
 - name: check to see vmware tools is installed
   ansible.windows.win_stat:

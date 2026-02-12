@@ -1,6 +1,6 @@
 ---
 language: python
-python: "2.7"
+python: "3.11"
 
 # Use the new container infrastructure
 sudo: false
@@ -9,11 +9,11 @@ sudo: false
 addons:
   apt:
     packages:
-      - python-pip
+      - python3-pip
 
 install:
-  # Install ansible
-  - pip install ansible
+  # Install ansible + lint
+  - pip install ansible ansible-lint
 
   # Check ansible version
   - ansible --version
@@ -24,6 +24,9 @@ install:
 script:
   # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+  # Lint role
+  - ansible-lint
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

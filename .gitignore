@@ -1,0 +1,46 @@
+# --- OS / Editor ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# JetBrains / PyCharm
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# --- Ansible ---
+# Local Ansible cache (collections, tmp, etc.)
+.ansible/
+
+# Retry files from failed playbook runs
+*.retry
+
+# --- Python (common in CI/tooling) ---
+__pycache__/
+*.py[cod]
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.tox/
+.cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Coverage
+.coverage
+htmlcov/

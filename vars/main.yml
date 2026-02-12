@@ -6,7 +6,7 @@ win_architecture_list:
   64_bit: amd64
   32_bit: x86
 
-win_architecture: "{{ win_architecture_list[(ansible_architecture | default('64-bit'))|replace('-','_')|replace(' ','_')|lower] }}"
+win_architecture: "{{ win_architecture_list[(ansible_architecture | default('64-bit')) | replace('-', '_') | replace(' ', '_') | lower] }}"
 
 vmware_tools_arch_map_list:
   arm64: arm

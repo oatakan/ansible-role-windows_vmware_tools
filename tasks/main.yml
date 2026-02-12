@@ -23,5 +23,32 @@
   when: "'Windows Server 2008' in ansible_distribution or 'Windows 7' in ansible_distribution"
 
 - name: reboot after installation
-  ansible.windows.win_reboot:
-  when: vmware_tools_install.reboot_required | default(true)
+  block:
+    - name: reboot after installation (shutdown fallback)
+      ansible.windows.win_shell: shutdown.exe /r /t 5 /c "Reboot required by VMware Tools install" /f
+      changed_when: true
+
+    - name: wait for host to come back
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 900
+  when:
+    - (ansible_distribution_version | default('')) is search('^6\\.1')
+    - vmware_tools_reboot_required | default(true)
+
+- name: reboot after installation
+  block:
+    - name: reboot after installation (win_reboot)
+      ansible.windows.win_reboot:
+  rescue:
+    - name: reboot after installation (shutdown fallback)
+      ansible.windows.win_shell: shutdown.exe /r /t 5 /c "Reboot required by VMware Tools install" /f
+      changed_when: true
+
+    - name: wait for host to come back
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 900
+  when:
+    - vmware_tools_reboot_required | default(true)
+    - not ((ansible_distribution_version | default('')) is search('^6\\.1'))
